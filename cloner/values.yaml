@@ -4,17 +4,12 @@ fullnameOverride: ""
 extraFileMappings: {}
 
 configs:
-  hash_and_push.sh: |
-    #!/bin/sh
-    set -x
-    rclone copyto ./"$1" osn:"bir190004-bucket01/TMA11/zarr/$2" -vvv
-
   pull_and_upload.sh: |
     #!/bin/sh
     set -x
     export FILENAME=$(basename "$1")
     export ZARRDIR=$(echo $1 | awk -F'/' '{print $7}')
-    mkdir untared && cd untared && wget $1 -O $FILENAME && tar -xvf $FILENAME && rm $FILENAME && ls -lh && cd .. && /bin/sh /mnt/configs/hash_and_push.sh untared $ZARRDIR
+    mkdir untared && cd untared && wget $1 -O $FILENAME && tar -xvf $FILENAME && rm $FILENAME && ls -lh && cd .. && rclone copyto ./untared osn:"bir190004-bucket01/TMA11/zarr/$ZARRDIR" -vvvv && rm -rf ./untared
 
 cloneJob:
   image: rclone/rclone:latest
