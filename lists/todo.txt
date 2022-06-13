@@ -1,4 +1,3 @@
-tma11/xam
 tma11/xan
 tma11/xao
 tma11/xap
