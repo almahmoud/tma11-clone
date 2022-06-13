@@ -1,0 +1,24 @@
+name: Reset archive list
+on:
+  workflow_dispatch:
+    inputs:
+      rawsource:
+        description: 'rclone ls output (.raw) file to be used for generating new lists'
+        required: true
+        default: 'generated/s3-only'
+
+jobs:
+  genlist:
+    name: Generate lists
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+          bash list-scripts/rclonels_to_list.sh ${{ github.event.inputs.rawsource }} 8000000000 200 lists/archive2 archive.bioconductor.org
+          bash list-scripts/generate_todo.sh archive2 todo.txt
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git add .
+          git commit -m "Generate lists $(echo $(date +'%m-%d-%H-%M-%S'))"
+          git push

@@ -1,0 +1,22 @@
+nameOverride: ""
+fullnameOverride: ""
+
+extraFileMappings: {}
+
+configs:
+  hash_and_push.sh: |
+    #!/bin/sh
+    set -x
+    rclone copyto ./"$1" osn:"bir190004-bucket01/TMA11/zarr/$2/$1" -vvv
+
+  pull_and_upload.sh: |
+    #!/bin/sh
+    set -x
+    export FILENAME=$(basename "$1")
+    export ZARRDIR=$(echo $1 | awk -F'/' '{print $7}')
+    wget $1 -O $FILENAME && tar -xvf $FILENAME && rm $FILENAME && ls | xargs -i /bin/sh /mnt/configs/hash_and_push.sh {} $ZARRDIR
+
+cloneJob:
+  image: rclone/rclone:latest
+  command: cat /mnt/configs/list.txt | xargs -I@ /bin/sh /mnt/configs/pull_and_upload.sh @
+  extraEnv: []
