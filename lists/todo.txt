@@ -1,4 +1,3 @@
-tma11/xcb
 tma11/xcc
 tma11/xcd
 tma11/xce
